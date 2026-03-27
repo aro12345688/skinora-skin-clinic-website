@@ -1,26 +1,232 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════
+   SKINORA — Brand Variables & Global Styles
+   ═══════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --rose:        #B85C62;
+  --rose-mid:    #C4747A;
+  --blush:       #D48A82;
+  --peach:       #E8A898;
+  --light-blush: #F2D4CE;
+  --pale-blush:  #FBF0ED;
+  --cream:       #FFF8F6;
+  --dark:        #1A0A0A;
+  --dark-mid:    #2C1A1A;
+  --grad:        linear-gradient(135deg, #A85258 0%, #C4747A 45%, #E8A898 100%);
+  --grad-dark:   linear-gradient(135deg, #2C1A1A 0%, #3D2020 50%, #4A2828 100%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Jost', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  overflow-x: hidden;
 }
+
+/* ── Typography ── */
+.font-serif { font-family: 'Cormorant Garamond', serif; }
+
+.gradient-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Section reveal animations ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Floating WhatsApp ── */
+.whatsapp-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  z-index: 999;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  text-decoration: none;
+}
+.whatsapp-float:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 28px rgba(37,211,102,0.55);
+}
+
+/* ── Hero sparkle particles ── */
+@keyframes float-up {
+  0%   { transform: translateY(0) scale(1);   opacity: 0.8; }
+  100% { transform: translateY(-120px) scale(0); opacity: 0; }
+}
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--peach);
+  animation: float-up linear infinite;
+  pointer-events: none;
+}
+
+/* ── Nav ── */
+.nav-scrolled {
+  background: rgba(255,248,246,0.95) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(184,92,98,0.1);
+}
+
+/* ── Service card ── */
+.service-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid #f0e0dc;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--grad);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.service-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(184,92,98,0.15); border-color: var(--light-blush); }
+.service-card:hover::before { transform: scaleX(1); }
+
+/* ── Tab buttons ── */
+.tab-btn {
+  padding: 0.6rem 1.8rem;
+  border-radius: 40px;
+  border: 1.5px solid var(--rose-mid);
+  background: transparent;
+  color: var(--rose-mid);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.tab-btn.active, .tab-btn:hover {
+  background: var(--grad);
+  color: white;
+  border-color: transparent;
+}
+
+/* ── Stat cards ── */
+.stat-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Admin sidebar ── */
+.admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.admin-sidebar-link:hover, .admin-sidebar-link.active {
+  background: var(--pale-blush);
+  color: var(--rose);
+}
+
+/* ── Status badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-pending  { background: #fef3c7; color: #92400e; }
+.badge-confirmed { background: #d1fae5; color: #065f46; }
+.badge-cancelled { background: #fee2e2; color: #991b1b; }
+.badge-new     { background: #dbeafe; color: #1e40af; }
+.badge-read    { background: #f3f4f6; color: #374151; }
+.badge-replied { background: #d1fae5; color: #065f46; }
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,10,10,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-box {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ── Form inputs ── */
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #e5d0cc;
+  border-radius: 10px;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+}
+.form-input:focus { border-color: var(--rose-mid); }
+
+/* ── Gradient button ── */
+.btn-grad {
+  background: var(--grad);
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 0.8rem 2rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.btn-grad:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-grad:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
