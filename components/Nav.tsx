@@ -40,6 +40,13 @@ export default function Nav() {
     document.body.style.overflow = next ? 'hidden' : ''
   }
 
+  const navigate = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    close()
+    const target = href.replace('#', '')
+    window.dispatchEvent(new CustomEvent('skinora:navigate', { detail: { target } }))
+  }
+
   return (
     <nav
       id="nav"
@@ -49,7 +56,7 @@ export default function Nav() {
       style={{ padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
     >
       {/* Logo */}
-      <a href="#home" onClick={close} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+      <a href="#home" onClick={e => navigate(e, '#home')} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
         <Image
           src="/logo.png"
           alt="Skinora"
@@ -66,6 +73,7 @@ export default function Nav() {
           <li key={l.href}>
             <a
               href={l.href}
+              onClick={e => navigate(e, l.href)}
               style={{
                 textDecoration: 'none',
                 fontSize: '0.85rem',
@@ -135,7 +143,7 @@ export default function Nav() {
           <a
             key={l.href}
             href={l.href}
-            onClick={close}
+            onClick={e => navigate(e, l.href)}
             style={{
               textDecoration: 'none', padding: '1rem 0',
               borderBottom: '1px solid var(--light-blush)',
