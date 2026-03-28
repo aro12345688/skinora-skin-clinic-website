@@ -91,19 +91,6 @@ export default function Loader() {
           />
         </div>
 
-        {/* Tagline */}
-        <p style={{
-          marginTop: '1.5rem',
-          fontSize: '0.7rem',
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-          color: 'var(--rose-mid)',
-          opacity: phase === 'hold' ? 1 : 0,
-          transition: 'opacity 0.4s ease',
-        }}>
-          Elevating Skincare to Perfection
-        </p>
-
         {/* Thin progress bar */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0,
