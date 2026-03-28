@@ -12,25 +12,32 @@ const NAV = [
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const router   = useRouter()
-  const pathname = usePathname()
-  const [checked, setChecked] = useState(false)
+  const router      = useRouter()
+  const pathname    = usePathname()
+  const [checked, setChecked]         = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  // Auth check runs once on mount. The admin layout stays mounted during all
+  // admin navigation, so this is sufficient — no need to re-check on every route.
   useEffect(() => {
-    // On login page, no auth check needed
     if (pathname === '/admin') { setChecked(true); return }
-    supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) router.replace('/admin')
-      else setChecked(true)
-    })
-  }, [pathname, router])
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        if (!data.session) router.replace('/admin')
+        else setChecked(true)
+      })
+      .catch(() => {
+        // Network failure or Supabase unreachable — redirect to login
+        router.replace('/admin')
+      })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push('/admin')
   }
 
-  if (!checked) return (
+  if (!checked && pathname !== '/admin') return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--pale-blush)' }}>
       <p style={{ color: 'var(--rose-mid)' }}>Loading…</p>
     </div>
@@ -41,13 +48,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f9fafb' }}>
+
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 30 }}
+          className="md:hidden"
+        />
+      )}
+
       {/* Sidebar */}
-      <aside style={{
-        width: '240px', minHeight: '100vh', background: 'white',
-        borderRight: '1px solid #f0e0dc', padding: '2rem 1rem',
-        display: 'flex', flexDirection: 'column',
-        position: 'sticky', top: 0, height: '100vh',
-      }}>
+      <aside
+        className={`admin-sidebar${sidebarOpen ? ' open' : ''}`}
+        style={{
+          width: '240px', minHeight: '100vh', background: 'white',
+          borderRight: '1px solid #f0e0dc', padding: '2rem 1rem',
+          display: 'flex', flexDirection: 'column',
+          position: 'sticky', top: 0, height: '100vh',
+        }}
+      >
         <Link href="/" style={{ textDecoration: 'none', marginBottom: '2.5rem', display: 'block' }}>
           <p className="font-serif" style={{ fontSize: '1.4rem', fontWeight: 500, color: 'var(--rose)', letterSpacing: '0.1em' }}>SKINORA</p>
           <p style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '2px' }}>Admin Portal</p>
@@ -58,6 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setSidebarOpen(false)}
               className={`admin-sidebar-link ${pathname === item.href ? 'active' : ''}`}
             >
               <span>{item.icon}</span>
@@ -79,8 +100,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </button>
       </aside>
 
-      {/* Main */}
-      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+      {/* Main content */}
+      <main style={{ flex: 1, padding: '2rem', overflowY: 'auto', minWidth: 0 }}>
+        {/* Mobile menu button — visible only on small screens via CSS */}
+        <button
+          onClick={() => setSidebarOpen(s => !s)}
+          aria-label="Open menu"
+          className="admin-menu-btn"
+        >
+          ☰ Menu
+        </button>
         {children}
       </main>
     </div>

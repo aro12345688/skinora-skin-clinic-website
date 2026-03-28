@@ -1,25 +1,30 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase, Booking } from '@/lib/supabase'
+import { toWaPhone } from '@/lib/utils'
 
 export default function Bookings() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading]   = useState(true)
   const [filter, setFilter]     = useState('all')
+  const [error, setError]       = useState('')
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
+    setError('')
     let q = supabase.from('bookings').select('*').order('created_at', { ascending: false })
     if (filter !== 'all') q = q.eq('status', filter)
-    const { data } = await q
+    const { data, error: err } = await q
+    if (err) setError('Failed to load bookings.')
     setBookings(data ?? [])
     setLoading(false)
-  }
+  }, [filter])
 
-  useEffect(() => { load() }, [filter])
+  useEffect(() => { load() }, [load])
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from('bookings').update({ status }).eq('id', id)
+    const { error: err } = await supabase.from('bookings').update({ status }).eq('id', id)
+    if (err) { setError('Failed to update status.'); return }
     load()
   }
 
@@ -27,6 +32,10 @@ export default function Bookings() {
     <div>
       <h1 className="font-serif" style={{ fontSize: '2rem', fontWeight: 400, color: 'var(--dark)', marginBottom: '0.25rem' }}>Bookings</h1>
       <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '1.5rem' }}>{bookings.length} record(s)</p>
+
+      {error && (
+        <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '1rem', background: '#fef2f2', padding: '0.75rem 1rem', borderRadius: '8px' }}>{error}</p>
+      )}
 
       {/* Filter tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
@@ -66,7 +75,7 @@ export default function Bookings() {
                 <tr key={row.id} style={{ borderTop: '1px solid #f9f1f0' }}>
                   <td style={{ padding: '0.9rem 1rem', fontSize: '0.85rem', fontWeight: 500, color: 'var(--dark)' }}>{row.name}</td>
                   <td style={{ padding: '0.9rem 1rem', fontSize: '0.82rem' }}>
-                    <a href={`https://wa.me/91${row.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none' }}>
+                    <a href={`https://wa.me/${toWaPhone(row.phone)}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none' }}>
                       {row.phone}
                     </a>
                   </td>

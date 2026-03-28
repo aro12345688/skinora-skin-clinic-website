@@ -27,7 +27,10 @@ export default function Nav() {
       setActive(cur)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      document.body.style.overflow = '' // Restore scroll if Nav unmounts while menu is open
+    }
   }, [])
 
   const close = () => { setOpen(false); document.body.style.overflow = '' }
@@ -46,26 +49,15 @@ export default function Nav() {
       style={{ padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
     >
       {/* Logo */}
-      <a href="#home" onClick={close} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
+      <a href="#home" onClick={close} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
         <Image
           src="/logo.png"
           alt="Skinora"
-          width={40}
-          height={40}
-          style={{ objectFit: 'contain', filter: scrolled ? 'none' : 'brightness(0) invert(1)' }}
+          width={120}
+          height={48}
+          style={{ objectFit: 'contain' }}
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
-        <span
-          className="font-serif"
-          style={{
-            fontSize: '1.5rem',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            color: scrolled ? 'var(--rose)' : 'white',
-          }}
-        >
-          SKINORA
-        </span>
       </a>
 
       {/* Desktop links */}

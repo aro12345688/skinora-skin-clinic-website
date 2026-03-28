@@ -1,30 +1,29 @@
 'use client'
-import { useState } from 'react'
-
-const SKIN = [
-  { icon: '⚡', name: 'Jet Plasma Therapy', desc: 'Non-invasive plasma treatment for skin rejuvenation, tightening, and resurfacing without surgery.' },
-  { icon: '❄️', name: 'Cryo Plasma Therapy', desc: 'Cold plasma technology to calm inflammation, reduce redness, and accelerate skin healing.' },
-  { icon: '✨', name: 'Anti-Melasma Treatment', desc: 'Advanced protocol targeting pigmentation and dark spots for a visibly even, luminous complexion.' },
-  { icon: '🌿', name: 'Anti-Sensitivity Treatment', desc: 'Gentle therapy to restore the skin barrier, reduce reactivity, and soothe sensitive skin.' },
-  { icon: '👁️', name: 'Under Eye Brightening', desc: 'Targeted brightening treatment to reduce dark circles, puffiness, and fine lines around the eyes.' },
-  { icon: '💫', name: 'Instant Glow Hybrid Treatment', desc: 'A signature multi-step glow treatment combining actives and light therapy for immediate radiance.' },
-  { icon: '🎯', name: 'BB Glow', desc: 'Semi-permanent foundation treatment that gives a naturally flawless, airbrushed complexion.' },
-  { icon: '🔥', name: 'Plasma Skin Tightening', desc: 'Plasma energy used to tighten lax skin and smooth fine lines with precision and minimal downtime.' },
-  { icon: '🌸', name: 'Hollywood Hair Reduction', desc: 'Premium long-lasting hair reduction treatment for silky, smooth skin using advanced technology.' },
-]
-
-const BEAUTY = [
-  { icon: '🖌️', name: 'Eyebrow Tinting', desc: 'Professionally tinted brows to enhance shape, definition, and fullness — perfectly framing your face.' },
-  { icon: '💋', name: 'Lip Shading', desc: 'Expert lip shading to add dimension, correct asymmetry, and create a naturally fuller look.' },
-  { icon: '👁️', name: 'Lashes Extension', desc: 'Luxurious lash extensions applied strand by strand for dramatic, long-lasting fullness and curl.' },
-  { icon: '✏️', name: 'Micro Blading | Micro Shading', desc: 'Hair-stroke or powder brow technique for beautifully realistic, semi-permanent eyebrows.' },
-  { icon: '🌊', name: 'Eyebrow Laminating', desc: 'Brow lamination for a sleek, brushed-up, perfectly groomed finish that lasts weeks.' },
-  { icon: '🎀', name: 'Lip Pigmentation', desc: 'Semi-permanent lip colour correction and enhancement for naturally beautiful, defined lips every day.' },
-]
+import { useState, useEffect, useRef } from 'react'
+import { SKIN_SERVICES as SKIN, BEAUTY_SERVICES as BEAUTY } from '@/lib/services'
 
 export default function Services({ onBook }: { onBook: (service: string) => void }) {
   const [tab, setTab] = useState<'skin' | 'beauty'>('skin')
-  const items = tab === 'skin' ? SKIN : BEAUTY
+  const gridRef       = useRef<HTMLDivElement>(null)
+  const items         = tab === 'skin' ? SKIN : BEAUTY
+
+  // Re-run IntersectionObserver whenever the tab changes so newly rendered
+  // cards (which the root-level observer never saw) get the reveal animation.
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target) }
+      }),
+      { threshold: 0.05, rootMargin: '0px 0px -20px 0px' }
+    )
+    grid.querySelectorAll('.reveal').forEach(el => {
+      el.classList.remove('visible')
+      observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [tab])
 
   return (
     <section id="services" style={{ padding: '6rem 2rem', background: 'var(--pale-blush)' }}>
@@ -50,7 +49,7 @@ export default function Services({ onBook }: { onBook: (service: string) => void
         </div>
 
         {/* Cards */}
-        <div style={{
+        <div ref={gridRef} style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
           gap: '1.5rem',

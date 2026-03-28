@@ -1,14 +1,20 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase, Subscriber } from '@/lib/supabase'
+import { toWaPhone } from '@/lib/utils'
 
 export default function Subscribers() {
   const [subs, setSubs]       = useState<Subscriber[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState('')
 
   useEffect(() => {
     supabase.from('subscribers').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => { setSubs(data ?? []); setLoading(false) })
+      .then(({ data, error: err }) => {
+        if (err) setError('Failed to load subscribers.')
+        setSubs(data ?? [])
+        setLoading(false)
+      })
   }, [])
 
   const exportCsv = () => {
@@ -28,6 +34,10 @@ export default function Subscribers() {
           Export CSV
         </button>
       </div>
+
+      {error && (
+        <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '1rem', background: '#fef2f2', padding: '0.75rem 1rem', borderRadius: '8px' }}>{error}</p>
+      )}
 
       <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #f0e0dc', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
@@ -50,7 +60,7 @@ export default function Subscribers() {
                   <td style={{ padding: '0.9rem 1.5rem', fontSize: '0.85rem', color: '#6b7280' }}>{row.name ?? '—'}</td>
                   <td style={{ padding: '0.9rem 1.5rem', fontSize: '0.82rem', color: '#6b7280' }}>
                     {row.phone ? (
-                      <a href={`https://wa.me/91${row.phone.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none' }}>{row.phone}</a>
+                      <a href={`https://wa.me/${toWaPhone(row.phone)}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none' }}>{row.phone}</a>
                     ) : '—'}
                   </td>
                   <td style={{ padding: '0.9rem 1.5rem', fontSize: '0.82rem', color: '#9ca3af' }}>

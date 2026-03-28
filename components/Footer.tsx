@@ -1,3 +1,4 @@
+'use client'
 export default function Footer() {
   return (
     <footer style={{ background: 'var(--grad-dark)', color: 'rgba(255,255,255,0.7)', padding: '3rem 2rem 2rem' }}>
@@ -11,12 +12,18 @@ export default function Footer() {
 
           <div>
             <p style={{ color: 'var(--peach)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1rem' }}>Quick Links</p>
-            {['#home', '#services', '#about', '#instagram', '#contact'].map(href => (
+            {[
+              { href: '#home',      label: 'Home' },
+              { href: '#services',  label: 'Services' },
+              { href: '#about',     label: 'About' },
+              { href: '#instagram', label: 'Gallery' },
+              { href: '#contact',   label: 'Contact' },
+            ].map(({ href, label }) => (
               <a key={href} href={href} style={{ display: 'block', color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: '0.85rem', marginBottom: '0.5rem', transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--peach)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
               >
-                {href.replace('#', '').charAt(0).toUpperCase() + href.slice(2)}
+                {label}
               </a>
             ))}
           </div>
@@ -31,7 +38,7 @@ export default function Footer() {
         </div>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', fontSize: '0.78rem' }}>
-          <p>© {new Date().getFullYear()} Skinora. All rights reserved.</p>
+          <p>© 2026 Skinora. All rights reserved.</p>
           <a href="https://www.instagram.com/skinoraofficial/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--peach)', textDecoration: 'none' }}>
             @skinoraofficial
           </a>

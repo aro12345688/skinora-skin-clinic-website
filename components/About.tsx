@@ -20,7 +20,6 @@ export default function About() {
               width={120}
               height={120}
               style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.85, marginBottom: '1.5rem' }}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
             <p className="font-serif" style={{ color: 'white', fontSize: '1.4rem', fontWeight: 300, letterSpacing: '0.1em', textAlign: 'center' }}>
               Where Science<br />Meets Beauty

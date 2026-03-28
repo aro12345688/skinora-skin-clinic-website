@@ -1,15 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-
-const ALL_SERVICES = [
-  'Jet Plasma Therapy', 'Cryo Plasma Therapy', 'Anti-Melasma Treatment',
-  'Anti-Sensitivity Treatment', 'Under Eye Brightening Treatment',
-  'Instant Glow Hybrid Treatment', 'BB Glow', 'Plasma Skin Tightening',
-  'Hollywood Hair Reduction', 'Eyebrow Tinting', 'Lip Shading',
-  'Lashes Extension', 'Micro Blading | Micro Shading',
-  'Eyebrow Laminating', 'Lip Pigmentation',
-]
+import { ALL_SERVICE_NAMES as ALL_SERVICES } from '@/lib/services'
+import { toWaPhone } from '@/lib/utils'
 
 const TIME_SLOTS = [
   '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM',
@@ -30,7 +23,16 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: P
   const [success, setSuccess]   = useState(false)
   const [error, setError]       = useState('')
 
+  // Sync selected service whenever the modal opens with a new defaultService
+  useEffect(() => {
+    if (isOpen) setForm(f => ({ ...f, service: defaultService }))
+  }, [isOpen, defaultService])
+
   if (!isOpen) return null
+
+  const resetForm = () => {
+    setForm({ name: '', phone: '', service: defaultService, date: '', time: '', message: '' })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,12 +41,14 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: P
     const { error: err } = await supabase.from('bookings').insert([form])
     setLoading(false)
     if (err) { setError('Something went wrong. Please contact us on WhatsApp.'); return }
+    resetForm()
     setSuccess(true)
   }
 
+  // Close without wiping — user's partially filled form is preserved across opens.
+  // Form only resets after a successful submission.
   const handleClose = () => {
     setSuccess(false)
-    setForm({ name: '', phone: '', service: defaultService, date: '', time: '', message: '' })
     setError('')
     onClose()
   }
@@ -74,7 +78,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: P
             </p>
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem', flexWrap: 'wrap' }}>
               <a
-                href={`https://wa.me/917519111234?text=Hi%20Skinora!%20I%20just%20booked%20${encodeURIComponent(form.service)}%20on%20${form.date}%20at%20${form.time}.%20My%20name%20is%20${encodeURIComponent(form.name)}.`}
+                href={`https://wa.me/917519111234?text=Hi%20Skinora!%20I%20just%20booked%20${encodeURIComponent(form.service)}%20on%20${form.date}%20at%20${form.time}.%20My%20name%20is%20${encodeURIComponent(form.name)}.%20My%20number%20is%20${toWaPhone(form.phone)}.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-grad"
@@ -90,8 +94,8 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: P
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <input className="form-input" placeholder="Full Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-              <input className="form-input" placeholder="Phone Number" type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required />
+              <input className="form-input" placeholder="Full Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required maxLength={100} />
+              <input className="form-input" placeholder="Phone Number" type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required maxLength={20} />
             </div>
 
             <select
@@ -133,6 +137,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = '' }: P
               value={form.message}
               onChange={e => setForm({ ...form, message: e.target.value })}
               style={{ resize: 'vertical' }}
+              maxLength={500}
             />
 
             {error && <p style={{ color: '#dc2626', fontSize: '0.82rem' }}>{error}</p>}

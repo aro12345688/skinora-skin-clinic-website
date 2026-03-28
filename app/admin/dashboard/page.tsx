@@ -4,25 +4,37 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 export default function Dashboard() {
-  const [counts, setCounts] = useState({ bookings: 0, pending: 0, enquiries: 0, subscribers: 0 })
-  const [recent, setRecent] = useState<Array<{ id: string; name: string; service: string; date: string; status: string }>>([])
+  const [counts, setCounts]   = useState({ bookings: 0, pending: 0, enquiries: 0, subscribers: 0 })
+  const [recent, setRecent]   = useState<Array<{ id: string; name: string; service: string; date: string; status: string }>>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState('')
 
   useEffect(() => {
     async function load() {
-      const [b, p, e, s, r] = await Promise.all([
-        supabase.from('bookings').select('id', { count: 'exact', head: true }),
-        supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('enquiries').select('id', { count: 'exact', head: true }),
-        supabase.from('subscribers').select('id', { count: 'exact', head: true }),
-        supabase.from('bookings').select('id,name,service,date,status').order('created_at', { ascending: false }).limit(5),
-      ])
-      setCounts({
-        bookings:    b.count ?? 0,
-        pending:     p.count ?? 0,
-        enquiries:   e.count ?? 0,
-        subscribers: s.count ?? 0,
-      })
-      setRecent(r.data ?? [])
+      setLoading(true)
+      try {
+        const [b, p, e, s, r] = await Promise.all([
+          supabase.from('bookings').select('id', { count: 'exact', head: true }),
+          supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+          supabase.from('enquiries').select('id', { count: 'exact', head: true }),
+          supabase.from('subscribers').select('id', { count: 'exact', head: true }),
+          supabase.from('bookings').select('id,name,service,date,status').order('created_at', { ascending: false }).limit(5),
+        ])
+        if (b.error || p.error || e.error || s.error || r.error) {
+          setError('Could not load some dashboard data.')
+        }
+        setCounts({
+          bookings:    b.count ?? 0,
+          pending:     p.count ?? 0,
+          enquiries:   e.count ?? 0,
+          subscribers: s.count ?? 0,
+        })
+        setRecent(r.data ?? [])
+      } catch {
+        setError('Failed to connect. Check your internet connection.')
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [])
@@ -38,6 +50,10 @@ export default function Dashboard() {
     <div>
       <h1 className="font-serif" style={{ fontSize: '2rem', fontWeight: 400, color: 'var(--dark)', marginBottom: '0.25rem' }}>Dashboard</h1>
       <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '2rem' }}>Welcome back, Geetha!</p>
+
+      {error && (
+        <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '1.5rem', background: '#fef2f2', padding: '0.75rem 1rem', borderRadius: '8px' }}>{error}</p>
+      )}
 
       {/* Stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
@@ -55,7 +71,9 @@ export default function Dashboard() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <span style={{ background: s.color, borderRadius: '10px', padding: '0.5rem', fontSize: '1.2rem' }}>{s.icon}</span>
               </div>
-              <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--dark)', fontFamily: 'Jost, sans-serif' }}>{s.value}</p>
+              <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--dark)', fontFamily: 'Jost, sans-serif' }}>
+                {loading ? '—' : s.value}
+              </p>
               <p style={{ color: '#9ca3af', fontSize: '0.8rem', marginTop: '0.25rem' }}>{s.label}</p>
             </div>
           </Link>

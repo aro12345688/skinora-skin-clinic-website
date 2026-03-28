@@ -76,9 +76,9 @@ export default function ContactSection() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <input className="form-input" placeholder="Your Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
-                <input className="form-input" placeholder="Phone Number" type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required />
-                <textarea className="form-input" placeholder="Your message or question..." rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required style={{ resize: 'vertical' }} />
+                <input className="form-input" placeholder="Your Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required maxLength={100} />
+                <input className="form-input" placeholder="Phone Number" type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} required maxLength={20} />
+                <textarea className="form-input" placeholder="Your message or question..." rows={4} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} required style={{ resize: 'vertical' }} maxLength={1000} />
                 {error && <p style={{ color: '#dc2626', fontSize: '0.82rem' }}>{error}</p>}
                 <button type="submit" className="btn-grad" disabled={loading} style={{ width: '100%', padding: '0.9rem' }}>
                   {loading ? 'Sending…' : 'Send Enquiry'}
@@ -97,17 +97,26 @@ export default function ContactSection() {
 
 function NewsletterWidget() {
   const [email, setEmail] = useState('')
-  const [done, setDone] = useState(false)
+  const [done, setDone]   = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
-    await supabase.from('subscribers').insert([{ email }])
+    setLoading(true)
+    setError('')
+    const { error: err } = await supabase.from('subscribers').insert([{ email }])
+    setLoading(false)
+    if (err) {
+      setError(err.code === '23505' ? "You're already subscribed!" : 'Could not subscribe. Please try again.')
+      return
+    }
     setDone(true)
   }
 
   if (done) return (
     <div style={{ marginTop: '1.5rem', padding: '1.2rem', background: 'var(--pale-blush)', borderRadius: '12px', textAlign: 'center' }}>
-      <p style={{ color: 'var(--rose)', fontSize: '0.9rem' }}>🎉 You're on the list!</p>
+      <p style={{ color: 'var(--rose)', fontSize: '0.9rem' }}>You're on the list!</p>
     </div>
   )
 
@@ -124,10 +133,11 @@ function NewsletterWidget() {
           required
           style={{ flex: 1 }}
         />
-        <button type="submit" className="btn-grad" style={{ padding: '0.75rem 1.2rem', whiteSpace: 'nowrap' }}>
-          Subscribe
+        <button type="submit" className="btn-grad" disabled={loading} style={{ padding: '0.75rem 1.2rem', whiteSpace: 'nowrap' }}>
+          {loading ? '…' : 'Subscribe'}
         </button>
       </div>
+      {error && <p style={{ color: '#dc2626', fontSize: '0.78rem', marginTop: '0.5rem' }}>{error}</p>}
     </form>
   )
 }
