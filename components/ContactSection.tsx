@@ -123,7 +123,7 @@ function NewsletterWidget() {
   return (
     <form onSubmit={handleSubscribe} style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'var(--pale-blush)', borderRadius: '12px' }}>
       <p style={{ fontSize: '0.85rem', color: 'var(--dark)', fontWeight: 500, marginBottom: '0.75rem' }}>Stay updated with offers & tips</p>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className="newsletter-row" style={{ display: 'flex', gap: '0.5rem' }}>
         <input
           className="form-input"
           type="email"

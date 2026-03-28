@@ -7,7 +7,7 @@ export default function About() {
 
         {/* Image side */}
         <div className="reveal" style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{
+          <div className="about-image-card" style={{
             width: '320px', height: '400px',
             borderRadius: '20px',
             background: 'var(--grad-dark)',

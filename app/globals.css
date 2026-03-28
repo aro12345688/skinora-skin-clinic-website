@@ -258,3 +258,50 @@ body {
 }
 .btn-grad:hover { opacity: 0.88; transform: translateY(-1px); }
 .btn-grad:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+/* ── Mobile overrides ── */
+@media (max-width: 640px) {
+  /* Section padding */
+  #services, #about, #instagram, #contact {
+    padding-top: 3.5rem !important;
+    padding-bottom: 3.5rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  /* About & Contact: reduce vertical gap when stacked */
+  #about > div, #contact > div {
+    gap: 2rem !important;
+  }
+
+  /* About image card: don't overflow on small screens */
+  #about .about-image-card {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+
+  /* Service tab buttons */
+  .tab-btn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Service cards: single column, no min-width overflow */
+  #services .service-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Modal full-screen on mobile */
+  .modal-box {
+    padding: 1.75rem !important;
+    border-radius: 16px !important;
+  }
+
+  /* Newsletter subscribe row: stack on very small */
+  .newsletter-row {
+    flex-direction: column !important;
+  }
+  .newsletter-row .btn-grad {
+    width: 100% !important;
+  }
+}

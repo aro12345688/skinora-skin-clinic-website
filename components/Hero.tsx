@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import Image from 'next/image'
 
 const STATS = [
   { value: '5000+', label: 'Happy Clients' },
@@ -41,14 +40,52 @@ export default function Hero({ onBook }: { onBook: () => void }) {
           0%   { transform: translateX(0); }
           100% { transform: translateX(calc(-100% / 3)); }
         }
-        .hero-strip {
-          animation: hero-scroll 32s linear infinite;
+        .hero-strip { animation: hero-scroll 32s linear infinite; }
+        .hero-strip-item { width: 33vw; }
+
+        .hero-eyebrow { letter-spacing: 0.25em; font-size: 0.75rem; }
+        .hero-h1 { font-size: clamp(2.6rem, 8vw, 6rem); }
+        .hero-stats {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1rem;
+          width: 100%;
+          max-width: 700px;
+        }
+        .hero-btns {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-bottom: 3rem;
+        }
+        .hero-btn-outline {
+          padding: 0.9rem 2.2rem;
+          font-size: 0.9rem;
+          border-radius: 40px;
+          border: 1.5px solid rgba(255,255,255,0.4);
+          color: white;
+          text-decoration: none;
+          letter-spacing: 0.05em;
+          transition: border-color 0.2s;
+          text-align: center;
+        }
+
+        @media (max-width: 640px) {
+          .hero-strip-item { width: 80vw; }
+          .hero-eyebrow { letter-spacing: 0.1em; font-size: 0.68rem; }
+          .hero-h1 { font-size: 2.4rem; }
+          .hero-stats { grid-template-columns: repeat(2, 1fr); }
+          .hero-btns { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
+          .hero-btn-outline { display: block; }
+          .hero-section { padding: 6rem 1.25rem 3rem !important; }
         }
       `}</style>
 
       <section
         id="home"
         ref={containerRef}
+        className="hero-section"
         style={{
           minHeight: '100vh',
           display: 'flex',
@@ -63,9 +100,9 @@ export default function Hero({ onBook }: { onBook: () => void }) {
       >
         {/* ── Background: horizontally scrolling image strip ── */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
-          <div className="hero-strip" style={{ display: 'flex', height: '100%', gap: 0, width: 'max-content' }}>
+          <div className="hero-strip" style={{ display: 'flex', height: '100%', width: 'max-content' }}>
             {STRIP.map((src, i) => (
-              <div key={i} style={{ flexShrink: 0, width: '33vw', height: '100%', position: 'relative' }}>
+              <div key={i} className="hero-strip-item" style={{ flexShrink: 0, height: '100%', position: 'relative' }}>
                 <img
                   src={src}
                   alt=""
@@ -77,21 +114,21 @@ export default function Hero({ onBook }: { onBook: () => void }) {
           </div>
         </div>
 
-        {/* ── Dark overlay for readability ── */}
+        {/* ── Dark overlay ── */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 1,
           background: 'linear-gradient(135deg, rgba(20,6,6,0.88) 0%, rgba(36,14,14,0.82) 50%, rgba(50,22,22,0.86) 100%)',
         }} />
 
-        {/* ── Text content ── */}
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <p style={{ color: 'var(--peach)', letterSpacing: '0.25em', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '1rem' }}>
+        {/* ── Content ── */}
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+          <p className="hero-eyebrow" style={{ color: 'var(--peach)', textTransform: 'uppercase', marginBottom: '1rem' }}>
             Chennai&apos;s Premium Skin & Beauty Clinic
           </p>
 
           <h1
-            className="font-serif"
-            style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 300, color: 'white', lineHeight: 1.1, marginBottom: '1.5rem' }}
+            className="font-serif hero-h1"
+            style={{ fontWeight: 300, color: 'white', lineHeight: 1.1, marginBottom: '1.25rem' }}
           >
             Reveal Your<br />
             <span style={{ fontStyle: 'italic', fontWeight: 600, background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
@@ -99,37 +136,25 @@ export default function Hero({ onBook }: { onBook: () => void }) {
             </span>
           </h1>
 
-          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '480px', lineHeight: 1.8, marginBottom: '2.5rem', fontSize: '1rem' }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '460px', lineHeight: 1.8, marginBottom: '2rem', fontSize: '0.95rem', padding: '0 0.5rem' }}>
             Advanced skin treatments and luxury beauty enhancements tailored for you — guided by Geetha and a dedicated team of specialists.
           </p>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem' }}>
+          <div className="hero-btns">
             <button onClick={onBook} className="btn-grad" style={{ padding: '0.9rem 2.2rem', fontSize: '0.9rem' }}>
               Book a Consultation
             </button>
-            <a
-              href="#services"
-              style={{
-                padding: '0.9rem 2.2rem', fontSize: '0.9rem', borderRadius: '40px',
-                border: '1.5px solid rgba(255,255,255,0.4)', color: 'white',
-                textDecoration: 'none', letterSpacing: '0.05em',
-                transition: 'border-color 0.2s',
-              }}
-            >
+            <a href="#services" className="hero-btn-outline">
               Explore Services
             </a>
           </div>
 
           {/* Stats */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-            gap: '1rem', width: '100%', maxWidth: '700px',
-          }}>
+          <div className="hero-stats">
             {STATS.map(s => (
               <div key={s.label} className="stat-card">
-                <div className="font-serif" style={{ fontSize: '2rem', fontWeight: 600, color: 'var(--peach)' }}>{s.value}</div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.05em', marginTop: '0.25rem' }}>{s.label}</div>
+                <div className="font-serif" style={{ fontSize: '1.8rem', fontWeight: 600, color: 'var(--peach)' }}>{s.value}</div>
+                <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em', marginTop: '0.25rem' }}>{s.label}</div>
               </div>
             ))}
           </div>
