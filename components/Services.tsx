@@ -60,29 +60,24 @@ export default function Services({ onBook }: { onBook: (service: string) => void
               className="service-card reveal"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div className="service-card__img">
-                <img src={item.image} alt={item.name} loading="lazy" />
-              </div>
-              <div className="service-card__body">
-                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{item.icon}</div>
-                <h3 className="font-serif" style={{ fontSize: '1.3rem', fontWeight: 500, marginBottom: '0.6rem', color: 'var(--dark)' }}>
-                  {item.name}
-                </h3>
-                <p style={{ color: '#6b7280', fontSize: '0.88rem', lineHeight: 1.7, marginBottom: '1.2rem' }}>
-                  {item.desc}
-                </p>
-                <button
-                  onClick={() => onBook(item.name)}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: 'var(--rose-mid)', fontSize: '0.82rem', fontWeight: 500,
-                    letterSpacing: '0.05em', padding: 0,
-                    display: 'flex', alignItems: 'center', gap: '0.3rem',
-                  }}
-                >
-                  Book This Treatment →
-                </button>
-              </div>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{item.icon}</div>
+              <h3 className="font-serif" style={{ fontSize: '1.3rem', fontWeight: 500, marginBottom: '0.6rem', color: 'var(--dark)' }}>
+                {item.name}
+              </h3>
+              <p style={{ color: '#6b7280', fontSize: '0.88rem', lineHeight: 1.7, marginBottom: '1.2rem' }}>
+                {item.desc}
+              </p>
+              <button
+                onClick={() => onBook(item.name)}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: 'var(--rose-mid)', fontSize: '0.82rem', fontWeight: 500,
+                  letterSpacing: '0.05em', padding: 0,
+                  display: 'flex', alignItems: 'center', gap: '0.3rem',
+                }}
+              >
+                Book This Treatment →
+              </button>
             </div>
           ))}
         </div>
